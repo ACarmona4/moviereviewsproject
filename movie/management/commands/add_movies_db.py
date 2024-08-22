@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from movie.models import Movie
-import os
 import json
 
 class Command(BaseCommand):
@@ -8,8 +7,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Construct the full path to the JSON file
-        # Recuerde que la consola está ubicada en la carpeta DjangoProjectBase.
-        # El path del archivo movie_descriptions con respecto a DjangoProjectBase sería la carpeta anterior
         json_file_path = '/Users/alejandrocarmona/Downloads/moviereviewsproject/movie/management/commands/movies.json'
 
         # Load data from the JSON file
@@ -19,11 +16,15 @@ class Command(BaseCommand):
         # Add products to the database
         for i in range(100):
             movie = movies[i]
-            exist = Movie.objects.filter(title=movie['title']).first() # Se asegura que la película no exista en la base de datos
+            exist = Movie.objects.filter(title=movie['title']).first()  # Verifica si la película ya existe en la base de datos
             if not exist:
-                Movie.objects.create(title = movie['title'],
-                                     image = 'movie/images/default.jpg',
-                                     genre = movie['genre'],
-                                     year = movie['year'])
+                # Crear la película en la base de datos
+                Movie.objects.create(
+                    title = movie['title'],
+                    image = 'movie/images/default.jpg',
+                    genre = movie['genre'],
+                    year = movie['year'],
+                    description = movie.get('plot') 
+                )
 
         #self.stdout.write(self.style.SUCCESS(f'Successfully added {cont} products to the database'))
